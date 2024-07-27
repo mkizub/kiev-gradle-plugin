@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.gradle.util.internal.GroovyDependencyUtil.groovyModuleDependency;
-
 public class KievJarFile {
     private static final Pattern FILE_NAME_PATTERN = Pattern.compile("(symade(?:-all)?)-(\\d.*|core).jar");
 

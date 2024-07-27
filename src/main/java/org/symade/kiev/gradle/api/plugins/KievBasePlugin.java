@@ -41,28 +41,19 @@ import org.symade.kiev.gradle.api.tasks.compile.KievCompile;
 
 import javax.inject.Inject;
 
+import java.io.File;
+import java.util.Set;
+
 import static org.gradle.api.internal.lambdas.SerializableLambdas.spec;
 
-/**
- * Extends {@link org.gradle.api.plugins.JavaBasePlugin} to provide support for compiling and documenting Groovy
- * source files.
- */
 public abstract class KievBasePlugin implements Plugin<Project> {
     public static final String KIEV_RUNTIME_EXTENSION_NAME = "kievRuntime";
 
     private final ObjectFactory objectFactory;
-//    private final ModuleRegistry moduleRegistry;
-//    private final JvmPluginServices jvmLanguageUtils;
 
     @Inject
-    public KievBasePlugin(
-        ObjectFactory objectFactory /*,
-        ModuleRegistry moduleRegistry,
-        JvmPluginServices jvmPluginServices */
-    ) {
+    public KievBasePlugin(ObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
-//        this.moduleRegistry = moduleRegistry;
-//        this.jvmLanguageUtils = jvmPluginServices;
     }
 
     @Override
@@ -104,7 +95,7 @@ public abstract class KievBasePlugin implements Plugin<Project> {
             sourceSet.getResources().getFilter().exclude(
                 spec(element -> kievSourceFiles.contains(element.getFile()))
             );
-            sourceSet.getAllJava().source(kievSource);
+            //sourceSet.getAllJava().source(kievSource);
             sourceSet.getAllSource().source(kievSource);
 
             TaskProvider<KievCompile> compileTask = createKievCompileTask(project, sourceSet, kievSource);
@@ -145,8 +136,8 @@ public abstract class KievBasePlugin implements Plugin<Project> {
 
     private TaskProvider<KievCompile> createKievCompileTask(Project project, SourceSet sourceSet, KievSourceDirectorySet kievSource) {
         final TaskProvider<KievCompile> compileTask = project.getTasks().register(sourceSet.getCompileTaskName("kiev"), KievCompile.class, kievCompile -> {
-            JvmPluginsHelper.compileAgainstJavaOutputs(kievCompile, sourceSet, objectFactory);
-            JvmPluginsHelper.configureAnnotationProcessorPath(sourceSet, kievSource, kievCompile.getOptions(), project);
+            //JvmPluginsHelper.compileAgainstJavaOutputs(kievCompile, sourceSet, objectFactory);
+            //JvmPluginsHelper.configureAnnotationProcessorPath(sourceSet, kievSource, kievCompile.getOptions(), project);
             kievCompile.setDescription("Compiles the " + kievSource + ".");
             kievCompile.setSource(kievSource);
             kievCompile.getJavaLauncher().convention(getJavaLauncher(project));
