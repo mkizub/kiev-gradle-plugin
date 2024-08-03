@@ -79,13 +79,13 @@ class KievPluginTest extends Specification {
         def compileTask = project.tasks['compileKiev']
         def compileTestTask = project.tasks['compileTestKiev']
         expect:
-        compileTask instanceof KievPlugin
+        compileTask instanceof KievCompile
         assertThat(compileTask.description, equalTo('Compiles the main Kiev source.'))
-        //assertTrue(compileTask.dependsOn.contains(JavaPlugin.COMPILE_JAVA_TASK_NAME))
+        assertFalse(compileTask.dependsOn.contains(JavaPlugin.COMPILE_JAVA_TASK_NAME))
 
-        assertThat(compileTestTask, instanceOf(KievPlugin))
+        assertThat(compileTestTask, instanceOf(KievCompile))
         assertThat(compileTestTask.description, equalTo('Compiles the test Kiev source.'))
-        //assertTrue(compileTestTask.dependsOn.contains(JavaPlugin.COMPILE_TEST_JAVA_TASK_NAME))
+        assertFalse(compileTestTask.dependsOn.contains(JavaPlugin.COMPILE_TEST_JAVA_TASK_NAME))
         //assertTrue(task.dependsOn.contains(JavaPlugin.CLASSES_TASK_NAME)) //TODO failing; do we care?
     }
 

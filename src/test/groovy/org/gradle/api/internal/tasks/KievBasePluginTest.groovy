@@ -45,7 +45,7 @@ class KievBasePluginTest extends Specification {
         expect:
         task instanceof KievCompile
         task.description == 'Compiles the custom Kiev source.'
-        //task.dependsOn.contains('compileCustomJava')
+        !task.dependsOn.contains('compileCustomJava')
     }
 
 }

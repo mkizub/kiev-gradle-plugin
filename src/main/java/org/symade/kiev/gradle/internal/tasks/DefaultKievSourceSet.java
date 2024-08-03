@@ -32,14 +32,14 @@ import static org.gradle.util.internal.ConfigureUtil.configure;
 
 public class DefaultKievSourceSet implements KievSourceSet, HasPublicType {
     private final KievSourceDirectorySet kiev;
-//    private final SourceDirectorySet allKiev;
+    private final SourceDirectorySet allKiev;
 
     @Inject
     public DefaultKievSourceSet(String name, String displayName, ObjectFactory objectFactory) {
         this.kiev = createKievSourceDirectorySet(name, displayName, objectFactory);
-//        allKiev = objectFactory.sourceDirectorySet("all" + name, displayName + " Kiev source");
-//        allKiev.source(kiev);
-//        allKiev.getFilter().include("**/*.kj");
+        allKiev = objectFactory.sourceDirectorySet("all" + name, displayName + " Kiev source");
+        allKiev.source(kiev);
+        allKiev.getFilter().include("**/*.kj");
     }
 
     private static KievSourceDirectorySet createKievSourceDirectorySet(String name, String displayName, ObjectFactory objectFactory) {
@@ -65,10 +65,10 @@ public class DefaultKievSourceSet implements KievSourceSet, HasPublicType {
         return this;
     }
 
-//    @Override
-//    public SourceDirectorySet getAllKiev() {
-//        return allKiev;
-//    }
+    @Override
+    public SourceDirectorySet getAllKiev() {
+        return allKiev;
+    }
 
     @Override
     public TypeOf<?> getPublicType() {

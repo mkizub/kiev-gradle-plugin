@@ -126,34 +126,34 @@ public abstract class KievRuntime {
                 //return inferKievClasspath(kievVersion);
             }
 
-            private void addKievDependency(String kievDependencyNotion, List<Dependency> dependencies, String otherDependency) {
-                String notation = kievDependencyNotion.replace(":kiev:", ":" + otherDependency + ":");
-                addDependencyTo(dependencies, notation);
-            }
-
-            private void addDependencyTo(List<Dependency> dependencies, String notation) {
-                // project.getDependencies().create(String) seems to be the only feasible way to create a Dependency with a classifier
-                dependencies.add(project.getDependencies().create(notation));
-            }
-
-            private FileCollection inferKievAllClasspath(String notation, VersionNumber kievVersion) {
-                List<Dependency> dependencies = new ArrayList<>();
-                addDependencyTo(dependencies, notation);
-                return detachedRuntimeClasspath(dependencies.toArray(new Dependency[0]));
-            }
-
-            private FileCollection inferKievClasspath(VersionNumber kievVersion) {
-                // We may already have the required pieces on classpath via localKiev()
-                Set<String> kievJarNames = kievJarNamesFor(kievVersion);
-                List<File> kievClasspath = collectJarsFromClasspath(classpath, kievJarNames);
-                return project.getLayout().files(kievClasspath);
-            }
-
-            private Configuration detachedRuntimeClasspath(Dependency... dependencies) {
-                Configuration classpath = project.getConfigurations().detachedConfiguration(dependencies);
-                getJvmPluginServices().configureAsRuntimeClasspath(classpath);
-                return classpath;
-            }
+//            private void addKievDependency(String kievDependencyNotion, List<Dependency> dependencies, String otherDependency) {
+//                String notation = kievDependencyNotion.replace(":kiev:", ":" + otherDependency + ":");
+//                addDependencyTo(dependencies, notation);
+//            }
+//
+//            private void addDependencyTo(List<Dependency> dependencies, String notation) {
+//                // project.getDependencies().create(String) seems to be the only feasible way to create a Dependency with a classifier
+//                dependencies.add(project.getDependencies().create(notation));
+//            }
+//
+//            private FileCollection inferKievAllClasspath(String notation, VersionNumber kievVersion) {
+//                List<Dependency> dependencies = new ArrayList<>();
+//                addDependencyTo(dependencies, notation);
+//                return detachedRuntimeClasspath(dependencies.toArray(new Dependency[0]));
+//            }
+//
+//            private FileCollection inferKievClasspath(VersionNumber kievVersion) {
+//                // We may already have the required pieces on classpath via localKiev()
+//                Set<String> kievJarNames = kievJarNamesFor(kievVersion);
+//                List<File> kievClasspath = collectJarsFromClasspath(classpath, kievJarNames);
+//                return project.getLayout().files(kievClasspath);
+//            }
+//
+//            private Configuration detachedRuntimeClasspath(Dependency... dependencies) {
+//                Configuration classpath = project.getConfigurations().detachedConfiguration(dependencies);
+//                getJvmPluginServices().configureAsRuntimeClasspath(classpath);
+//                return classpath;
+//            }
 
             // let's override this so that delegate isn't created at autowiring time (which would mean on every build)
             @Override
@@ -165,17 +165,17 @@ public abstract class KievRuntime {
         };
     }
 
-    private static List<File> collectJarsFromClasspath(Iterable<File> classpath, Set<String> jarNames) {
-        return stream(classpath.spliterator(), false)
-            .filter(file -> jarNames.contains(file.getName()))
-            .collect(toList());
-    }
-
-    private static Set<String> kievJarNamesFor(VersionNumber kievVersion) {
-        return KIEV_LIBS.stream()
-            .map(libName -> libName + "-" + kievVersion + ".jar")
-            .collect(toSet());
-    }
+//    private static List<File> collectJarsFromClasspath(Iterable<File> classpath, Set<String> jarNames) {
+//        return stream(classpath.spliterator(), false)
+//            .filter(file -> jarNames.contains(file.getName()))
+//            .collect(toList());
+//    }
+//
+//    private static Set<String> kievJarNamesFor(VersionNumber kievVersion) {
+//        return KIEV_LIBS.stream()
+//            .map(libName -> libName + "-" + kievVersion + ".jar")
+//            .collect(toSet());
+//    }
 
     @Nullable
     static KievJarFile findKievJarFile(Iterable<File> classpath) {

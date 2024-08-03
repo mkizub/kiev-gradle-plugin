@@ -56,5 +56,5 @@ public interface KievSourceSet {
      *
      * @return the Kiev source. Never returns null.
      */
-//    SourceDirectorySet getAllKiev();
+    SourceDirectorySet getAllKiev();
 }

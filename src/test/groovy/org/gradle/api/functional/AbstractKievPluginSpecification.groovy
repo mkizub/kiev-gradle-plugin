@@ -23,7 +23,8 @@ abstract class AbstractKievPluginSpecification extends Specification {
 
     String rootDir = System.getProperty("user.dir").replace('\\', '/')
     File buildScript
-    List<String> expectedOutputDir = ['build', 'classes', 'kiev']
+    List<String> expectedOutputKievDir = ['build', 'classes', 'kiev']
+    List<String> expectedOutputJavaDir = ['build', 'classes', 'java']
     //Closure<List<String>> expectedOutputDir = { String gradleVersion ->
     //    List<String> retval = ['build', 'classes']
     //    if(VersionNumber.parse(gradleVersion) >= VersionNumber.parse('4.0')) {
@@ -37,23 +38,24 @@ abstract class AbstractKievPluginSpecification extends Specification {
         String buildFileContent =
             """
             plugins {
-                id 'org.symade.kiev'
+                id 'kiev-gradle-plugin'
             }
             repositories {
                 mavenLocal()
                 mavenCentral()
-                //maven {
-                //    url 'https://oss.sonatype.org/content/repositories/snapshots' //for Kiev snapshot builds
-                //}
             }
             dependencies {
-                implementation files("${rootDir}/../symade-06.jar")
+                implementation files("${rootDir}/symade-06.jar")
                 testImplementation group: 'junit', name: 'junit', version: '4.13'
             }
             //compileKiev.kievOptions.forkOptions.jvmArgs += ['-Xdebug', '-Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y'] //debug on linux/OS X
             //kievdoc {
             //    kievDocOptions.verbose = true
             //}
+            tasks.compileKiev {
+                options.verbose = true
+                options.debug = true
+            }
             """
         return buildFileContent
     }

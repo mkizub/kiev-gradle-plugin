@@ -150,7 +150,7 @@ public abstract class KievCompile extends AbstractCompile implements HasCompileO
 
     private List<File> copyOf(Iterable<File> iterable) {
         ArrayList<File> list = new ArrayList<>();
-        for (File f : determineKievCompileClasspath())
+        for (File f : iterable)
             list.add(f);
         return list;
     }

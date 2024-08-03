@@ -99,6 +99,13 @@ public class InProcessKievCompiler implements KievCompiler<KievJavaJointCompileS
             args.add("-target");
             args.add("8");
 
+            if (spec.getCompileOptions().isDebug()) {
+                args.add("-g");
+            }
+            if (spec.getCompileOptions().isVerbose()) {
+                args.add("-v");
+            }
+
             args.addAll(spec.getCompileOptions().getCompilerArgs());
 
             File listOfFiles = new File(spec.getTempDir(), "files.txt");
@@ -114,7 +121,6 @@ public class InProcessKievCompiler implements KievCompiler<KievJavaJointCompileS
             Field kievSourceMapping = null;
             Field kievErrorCount = null;
             try {
-                LOGGER.quiet("kievCompiler.getClass(): " + kievCompiler.getClass());
                 kievRunMethod = kievCompiler.getClass().getMethod("run", String[].class);
                 kievSourceMapping = kievCompiler.getClass().getField("sourceToClassMapping");
                 kievErrorCount = kievCompiler.getClass().getField("errorCount");

@@ -28,7 +28,7 @@ class SimpleKievBuildTest extends AbstractKievPluginSpecification {
         simplePogo = new File(srcMainKiev, asPath('example', 'gradle', 'Simple.kj'))
         simplePogo.getParentFile().mkdirs()
         simplePogo << """
-            package example.gradle
+            package example.gradle;
             
             class Simple {}"""
 
@@ -50,7 +50,7 @@ class SimpleKievBuildTest extends AbstractKievPluginSpecification {
         //result.output.contains('Picked up JAVA_TOOL_OPTIONS: -Duser.language=en')
         
         //did we actually compile anything?
-        new File(testProjectDir.root, asPath(expectedOutputDir + ['main', 'example', 'gradle', 'Simple.class'])).exists()
+        new File(testProjectDir.root, asPath(expectedOutputKievDir + ['main', 'example', 'gradle', 'Simple.class'])).exists()
 
         //where:
         //gradleVersion << gradleVersionsToTest

@@ -20,6 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.attributes.LibraryElements;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.plugins.DslObject;
 import org.gradle.api.internal.tasks.DefaultSourceSet;
@@ -28,6 +29,7 @@ import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.internal.JvmPluginsHelper;
+import org.gradle.api.plugins.jvm.internal.JvmPluginServices;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
@@ -43,6 +45,7 @@ import javax.inject.Inject;
 
 import java.io.File;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import static org.gradle.api.internal.lambdas.SerializableLambdas.spec;
 
@@ -50,10 +53,12 @@ public abstract class KievBasePlugin implements Plugin<Project> {
     public static final String KIEV_RUNTIME_EXTENSION_NAME = "kievRuntime";
 
     private final ObjectFactory objectFactory;
+    private final JvmPluginServices jvmLanguageUtils;
 
     @Inject
-    public KievBasePlugin(ObjectFactory objectFactory) {
+    public KievBasePlugin(ObjectFactory objectFactory, JvmPluginServices jvmPluginServices) {
         this.objectFactory = objectFactory;
+        this.jvmLanguageUtils = jvmPluginServices;
     }
 
     @Override
@@ -95,13 +100,13 @@ public abstract class KievBasePlugin implements Plugin<Project> {
             sourceSet.getResources().getFilter().exclude(
                 spec(element -> kievSourceFiles.contains(element.getFile()))
             );
-            //sourceSet.getAllJava().source(kievSource);
+            sourceSet.getAllJava().source(kievSource);
             sourceSet.getAllSource().source(kievSource);
 
             TaskProvider<KievCompile> compileTask = createKievCompileTask(project, sourceSet, kievSource);
 
             ConfigurationContainer configurations = project.getConfigurations();
-            configureLibraryElements(sourceSet, configurations, project.getObjects());
+//            configureLibraryElements(sourceSet, configurations, project.getObjects());
             configureTargetPlatform(compileTask, sourceSet, configurations);
         });
     }
@@ -119,24 +124,27 @@ public abstract class KievBasePlugin implements Plugin<Project> {
         return kievSourceSet.getKiev();
     }
 
-    private static void configureLibraryElements(SourceSet sourceSet, ConfigurationContainer configurations, ObjectFactory objectFactory) {
-        // Explain that Groovy, for compile, also needs the resources (#9872)
-        configurations.getByName(sourceSet.getCompileClasspathConfigurationName()).attributes(attrs ->
-            attrs.attribute(
-                LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
-                objectFactory.named(LibraryElements.class, LibraryElements.CLASSES_AND_RESOURCES)
-            )
-        );
-    }
+//    private static void configureLibraryElements(SourceSet sourceSet, ConfigurationContainer configurations, ObjectFactory objectFactory) {
+//        // Explain that Groovy, for compile, also needs the resources (#9872)
+//        configurations.getByName(sourceSet.getCompileClasspathConfigurationName()).attributes(attrs ->
+//            attrs.attribute(
+//                LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
+//                objectFactory.named(LibraryElements.class, LibraryElements.CLASSES_AND_RESOURCES)
+//            )
+//        );
+//    }
 
     private void configureTargetPlatform(TaskProvider<KievCompile> compileTask, SourceSet sourceSet, ConfigurationContainer configurations) {
-//        jvmLanguageUtils.useDefaultTargetPlatformInference(configurations.getByName(sourceSet.getCompileClasspathConfigurationName()), compileTask);
-//        jvmLanguageUtils.useDefaultTargetPlatformInference(configurations.getByName(sourceSet.getRuntimeClasspathConfigurationName()), compileTask);
+        jvmLanguageUtils.useDefaultTargetPlatformInference(configurations.getByName(sourceSet.getCompileClasspathConfigurationName()), compileTask);
+        jvmLanguageUtils.useDefaultTargetPlatformInference(configurations.getByName(sourceSet.getRuntimeClasspathConfigurationName()), compileTask);
     }
 
     private TaskProvider<KievCompile> createKievCompileTask(Project project, SourceSet sourceSet, KievSourceDirectorySet kievSource) {
         final TaskProvider<KievCompile> compileTask = project.getTasks().register(sourceSet.getCompileTaskName("kiev"), KievCompile.class, kievCompile -> {
             //JvmPluginsHelper.compileAgainstJavaOutputs(kievCompile, sourceSet, objectFactory);
+            ConfigurableFileCollection classpath = objectFactory.fileCollection();
+            classpath.from(sourceSet.getCompileClasspath());
+            kievCompile.getConventionMapping().map("classpath", () -> classpath);
             //JvmPluginsHelper.configureAnnotationProcessorPath(sourceSet, kievSource, kievCompile.getOptions(), project);
             kievCompile.setDescription("Compiles the " + kievSource + ".");
             kievCompile.setSource(kievSource);
