@@ -69,16 +69,16 @@ public class InProcessKievCompiler implements KievCompiler<KievJavaJointCompileS
             }
 
             LinkedHashSet<String> classPaths = new LinkedHashSet<>();
-            for (File f : spec.getKievClasspath()) {
-                String path = f.getAbsolutePath();
-                if (!classPaths.contains(path))
-                    classPaths.add(path);
-            }
             for (File f : spec.getCompileClasspath()) {
                 String path = f.getAbsolutePath();
                 if (!classPaths.contains(path))
                     classPaths.add(path);
             }
+//            for (File f : spec.getKievClasspath()) {
+//                String path = f.getAbsolutePath();
+//                if (!classPaths.contains(path))
+//                    classPaths.add(path);
+//            }
             StringBuilder classpath = new StringBuilder();
             for (String path : classPaths) {
                 if (!classpath.isEmpty())
@@ -118,13 +118,13 @@ public class InProcessKievCompiler implements KievCompiler<KievJavaJointCompileS
             args.add("@" + listOfFiles.getPath());
 
             Method kievRunMethod = null;
-            Field kievSourceMapping = null;
-            Field kievErrorCount = null;
+            //Field kievSourceMapping = null;
+            //Field kievErrorCount = null;
             try {
                 kievRunMethod = kievCompiler.getClass().getMethod("run", String[].class);
-                kievSourceMapping = kievCompiler.getClass().getField("sourceToClassMapping");
-                kievErrorCount = kievCompiler.getClass().getField("errorCount");
-            } catch (NoSuchMethodException | NoSuchFieldException e) {
+                //kievSourceMapping = kievCompiler.getClass().getField("sourceToClassMapping");
+                //kievErrorCount = kievCompiler.getClass().getField("errorCount");
+            } catch (NoSuchMethodException e) {
                 LOGGER.error("Cannot resolve kiev.Compiler.run(String[] args) or kiev.Compiler.getSourceToClassMapping()", e);
                 return new DefaultWorkResult(false, e);
             }
@@ -141,9 +141,9 @@ public class InProcessKievCompiler implements KievCompiler<KievJavaJointCompileS
                 LOGGER.quiet("Compiling " + fileCount + " source file(s)" + " to " + spec.getDestinationDir().getAbsolutePath());
             }
 
-            Map<String, Set<String>> sourceClassesMapping = null;
+            //Map<String, Set<String>> sourceClassesMapping = null;
             int exitCode = 0;
-            int errorCount = 0;
+            //int errorCount = 0;
             try {
                 Object argsArr = args.toArray(new String[0]);
                 try {
@@ -161,8 +161,8 @@ public class InProcessKievCompiler implements KievCompiler<KievJavaJointCompileS
                     // ignore CompilationAbortError, it's a normal completition
                 }
                 //noinspection unchecked
-                sourceClassesMapping = (Map<String, Set<String>>)kievSourceMapping.get(null);
-                errorCount = (Integer)kievErrorCount.get(null);
+                //sourceClassesMapping = (Map<String, Set<String>>)kievSourceMapping.get(null);
+                //errorCount = (Integer)kievErrorCount.get(null);
             } catch (IllegalAccessException e) {
                 LOGGER.error("Cannot access error counts", e);
                 throw new CompilationFailedException(e);
@@ -172,14 +172,14 @@ public class InProcessKievCompiler implements KievCompiler<KievJavaJointCompileS
 
 
             ApiCompilerResult result = new ApiCompilerResult();
-            if (sourceClassesMapping != null) {
-                result.getSourceClassesMapping().putAll(sourceClassesMapping);
-            }
-            if (errorCount > 0 || sourceClassesMapping == null) {
-                LOGGER.error("Got errors during compilation");
-                throw new CompilationFailedException(result);
-            }
-            LOGGER.quiet("Successfully compiled "+sourceClassesMapping.size()+" files");
+            //if (sourceClassesMapping != null) {
+            //    result.getSourceClassesMapping().putAll(sourceClassesMapping);
+            //}
+            //if (errorCount > 0 || sourceClassesMapping == null) {
+            //    LOGGER.error("Got errors during compilation");
+            //    throw new CompilationFailedException(result);
+            //}
+            LOGGER.quiet("Successfully compiled "+allSourceFiles.size()+" files");
             return result;
         } catch (IOException e) {
             throw new RuntimeException(e);
